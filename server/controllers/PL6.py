@@ -1,62 +1,50 @@
 import gurobipy as gp
 import numpy as np
+from gurobipy import GRB
 
 class PL6:
-    def __init__(self,capacite,demande,costs,quantite_transport):
-        self.capacite = capacite
-        self.demande = demande
-        self.costs = costs
-        self.quantite_transport = quantite_transport
-        self.names = ["A","B","C","D1","D2","E","F"]
-
-    def run(self):
-        model=gp.Model("PL6")
-
-        x = model.addVars(range(7), range(7), vtype=gp.GRB.INTEGER, name='x')
-
-        model.setObjective( gp.quicksum( (x[i,j]*self.costs[i][j])
-                                            for i in range(7)
-                                                for j in range(7)
-                                                    if not np.isnan(self.costs[i][j])
-                                        ), gp.GRB.MINIMIZE)
-
-        # Capacité des usines
-        model.addConstr(gp.quicksum(x[0,i] for i in range(7)) <= self.capacite[0])
-        model.addConstr(gp.quicksum(x[1,i] for i in range(7)) <= self.capacite[1])
-        model.addConstr(gp.quicksum(x[2,i] for i in range(7)) <= self.capacite[2])
-
-        # Demande des clients
-        model.addConstr(gp.quicksum(x[i,5] for i in range(7)) - x[5,6] == self.demande[0])
-        model.addConstr(gp.quicksum(x[i,6] for i in range(7)) - x[6,5] == self.demande[1])
-
-        # Quantité pouvant etres transportées
-        for i in range(7):
-            for j in range(7):
-                model.addConstr(x[i,j] <= self.quantite_transport)
-
-        # Les depots
-        model.addConstr( gp.quicksum(x[3,i] for i in range(7)) <= ( gp.quicksum(x[i,3] for i in range(7)) ))
-        model.addConstr( gp.quicksum(x[4,i] for i in range(7)) <= ( gp.quicksum(x[i,4] for i in range(7)) ))
-        
-        # Les parametres nulles doievent rester nulles
-        for i in range(7):
-            for j in range(7):
-                if (self.costs[i][j] == -1):
-                    model.addConstr(x[i,j] == 0)
-
-        model.optimize()
-
-        result = {}
-
-        tab = []
-        for i,v in enumerate(model.getVars()):
-            tab.append(v.x)
-        print(tab)
-
-        # fill the matrix with the values of tab
-        for i in range(7):
-            result[self.names[i]] = {}
-            for j in range(7):
-                result[self.names[i]][self.names[j]] = int(tab[i*7+j])
-
-        return result
+    def solve_shortest_path(nodes, arcs, durations, start_node, end_node):
+       model = gp.Model('shortest_path')
+   
+       # Decision variables
+       x = {}
+       for arc in arcs:
+           x[arc] = model.addVar(vtype=GRB.BINARY, name=f'x_{arc}')
+   
+       # Objective function
+       model.setObjective(sum(x[arc] * durations[arc] for arc in arcs), GRB.MINIMIZE)
+   
+       # Constraints
+       for node in nodes:
+           if node == start_node:
+               model.addConstr(sum(x[arc] for arc in arcs if arc[0] == node) - sum(x[arc] for arc in arcs if arc[1] == node) == 1)
+           elif node == end_node:
+               model.addConstr(sum(x[arc] for arc in arcs if arc[0] == node) - sum(x[arc] for arc in arcs if arc[1] == node) == -1)
+           else:
+               model.addConstr(sum(x[arc] for arc in arcs if arc[0] == node) - sum(x[arc] for arc in arcs if arc[1] == node) == 0)
+   
+       model.optimize()
+   
+       if model.status == GRB.OPTIMAL:
+           path = [arc for arc in arcs if x[arc].x > 0.5]
+           return path
+       else:
+           return None
+   
+    # User input for network structure and durations
+    nodes = ['A', 'B', 'C', 'D', 'E', 'F' , 'G'] 
+    arcs = [('A', 'B'), ('A', 'C'), ('C', 'B'), ('B', 'D'), ('C', 'F'), ('C', 'E'), ('D', 'E'), ('B', 'E'), ('D', 'G'), ('E', 'G'), ('F', 'E')] 
+    durations = {('A', 'B'): 4, ('A', 'C'): 3, ('C', 'B'): 3, ('B', 'D'): 6, ('C', 'E'): 4, ('D', 'E'): 2, ('C', 'F'): 6,  ('B', 'E'): 5, ('D', 'G'): 1, ('E', 'G'): 3 ,('F', 'E'): 6}  
+    
+    # User input for start and end nodes
+    start_node = 'A'  
+    end_node = 'G'    
+    
+    
+    result = solve_shortest_path(nodes, arcs, durations, start_node, end_node)
+    if result:
+        print(f"The shortest path from {start_node} to {end_node} is: {result}")
+        total_duration = sum(durations[arc] for arc in result)
+        print(f"Total duration: {total_duration}")
+    else:
+        print("No feasible solution found.")
