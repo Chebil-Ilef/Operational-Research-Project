@@ -1,51 +1,61 @@
 import gurobipy as gp
 from gurobipy import GRB
-from itertools import combinations
-import numpy as np
 
-class PL4:
-    def solve_optimization(A, population, num_regions, B, K, D, a, b, c):
-       # Create the model
-       model = gp.Model("implantation_agences")
-       x = model.addVars(num_regions, vtype=GRB.BINARY, name="x")
-       y = model.addVars(num_regions, vtype=GRB.BINARY, name="y")
-   
-       # Objective function
-       Z = sum(a * population[i] + (
-                   b * sum(A[i][j] * population[j] for j in range(num_regions) if i != j) + c * y[i] * population[
-               i]) * x[i]
-               for i in range(num_regions))
-       model.setObjective(Z, GRB.MAXIMIZE)
-   
-       # Budget constraints
-       model.addConstr(K * x.sum() + D * y.sum() <= B, "contrainte_budget")
-   
-       # Constraints for not opening branches in neighboring regions
-       for i, j in combinations(range(num_regions), 2):
-           if A[i][j] == 1:
-               model.addConstr(A[i][j] * (x[i] + x[j]) <= 1, f"contrainte_voisines_{i}_{j}")
-   
-       # Constraints to have clients from all regions
-       for i in range(num_regions):
-           model.addConstr(sum(A[i][j] * x[j] for j in range(num_regions)) + y[i] >= 1, f"contrainte_clients_{i}")
-   
-       model.optimize()
-   
-       # Get the solution
-       solution = []
-       for i in range(num_regions):
-           solution.append({
-               "Region": i + 1,
-               "Agence": int(x[i].getAttr('X')),
-               "Serveur_DAB": int(y[i].getAttr('X'))
-           })
-   
-       return solution
-   
-# Example usage:
-# A = ...  # adjacency matrix
-# population = ...  # population list
-# num_regions = ...  # number of regions
-# B, K, D, a, b, c = ..., ..., ..., ..., ..., ...  # other parameters
-# results = solve_optimization(A, population, num_regions, B, K, D, a, b, c)
-# print(results)
+class BankBranchOptimization:
+    def __init__(self, budget, cost_per_branch, population, adjacency_matrix, branch_attractiveness, branch_attractiveness_neighbors):
+        self.budget = budget
+        self.cost_per_branch = cost_per_branch
+        self.population = population
+        self.adjacency_matrix = adjacency_matrix
+        self.branch_attractiveness = branch_attractiveness
+        self.branch_attractiveness_neighbors = branch_attractiveness_neighbors
+        self.model = gp.Model('BankBranchOptimization')
+
+    def setup_model(self):
+        regions = range(len(self.population))
+
+        # Binary variables for each region where 1 means a branch is placed
+        branches = self.model.addVars(regions, vtype=GRB.BINARY, name="Branch")
+
+        # Objective: Maximize the number of clients
+        self.model.setObjective(
+            gp.quicksum(
+                branches[r] * self.population[r] * self.branch_attractiveness +
+                gp.quicksum(
+                    branches[i] * self.adjacency_matrix[r][i] * self.population[i] * self.branch_attractiveness_neighbors 
+                    for i in regions if i != r
+                )
+                for r in regions
+            ),
+            GRB.MAXIMIZE
+        )
+
+        # Constraint: Do not exceed the budget
+        self.model.addConstr(
+            gp.quicksum(branches[r] * self.cost_per_branch for r in regions) <= self.budget,
+            "budget"
+        )
+
+        # Constraint: No two branches in neighboring regions
+        for r in regions:
+            for i in regions:
+                if self.adjacency_matrix[r][i] == 1:
+                    self.model.addConstr(branches[r] + branches[i] <= 1, f"neighboring_{r}_{i}")
+
+    def solve(self):
+        self.setup_model()
+        self.model.optimize()
+        if self.model.status == GRB.OPTIMAL:
+            print('Optimal solution found with total number of clients:', self.model.objVal)
+            return self.extract_solution()
+        else:
+            print('No optimal solution found or there was an issue solving the model.')
+            return None
+
+    def extract_solution(self):
+        solution = []
+        for v in self.model.getVars():
+            if v.x > 0.5 and 'Branch' in v.varName:
+                region = int(v.varName.split('[')[1].split(']')[0])
+                solution.append(region)
+        return solution

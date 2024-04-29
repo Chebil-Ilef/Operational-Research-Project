@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 from controllers.PL1 import PL1
 from controllers.PL3 import PL3
 from controllers.PL2 import PL2
-from controllers.PL4 import PL4
+from controllers.PL4 import BankBranchOptimization
 from controllers.PL5 import PL5
 # from controllers.PL6 import PL6
 from controllers.PL6 import NetworkOptimization
@@ -88,25 +88,64 @@ def pl3():
 
     
 
-@app.route('/pl4', methods = ['POST'])
-@cross_origin()
+# @app.route('/pl4', methods = ['POST'])
+# @cross_origin()
+# def pl4():
+#     data = request.get_json()
+#     A = data["A"]
+#     population = data["population"]
+#     num_regions = data["num_regions"]
+#     B = data["B"]
+#     K = data["K"]
+#     D = data["D"]
+#     a = data["a"]
+#     b = data["b"]
+#     c = data["c"]
+
+#     pl4 = PL4(A=A, population=population, num_regions=num_regions, B=B, K=K, D=D, a=a, b=b, c=c)
+#     response = {
+#         "res4":pl4.run()
+#     }
+#     return jsonify(response)
+
+@app.route('/pl4', methods=['POST'])
 def pl4():
     data = request.get_json()
-    A = data["A"]
-    population = data["population"]
-    num_regions = data["num_regions"]
-    B = data["B"]
-    K = data["K"]
-    D = data["D"]
-    a = data["a"]
-    b = data["b"]
-    c = data["c"]
 
-    pl4 = PL4(A=A, population=population, num_regions=num_regions, B=B, K=K, D=D, a=a, b=b, c=c)
-    response = {
-        "res4":pl4.run()
-    }
-    return jsonify(response)
+    try:
+        # Extract required data from request
+        budget = data['budget']
+        cost_per_branch = data['cost_per_branch']
+        populations = data['populations']
+        adjacency_matrix = data['adjacency_matrix']
+        branch_attractiveness = data['branch_attractiveness']
+        branch_attractiveness_neighbors = data['branch_attractiveness_neighbors']
+
+        # Create an instance of the BankBranchOptimization class
+        optimizer = BankBranchOptimization(
+            budget, 
+            cost_per_branch, 
+            populations, 
+            adjacency_matrix, 
+            branch_attractiveness, 
+            branch_attractiveness_neighbors
+        )
+        
+        # Find the optimal locations
+        solution = optimizer.solve()
+
+        # If a solution is found, return it
+        if solution is not None:
+            return jsonify({"optimal_locations": solution}), 200
+        else:
+            return jsonify({"error": "No optimal solution could be found."}), 404
+
+    except KeyError as e:
+        # If there is an error in the data format, return an error message
+        return jsonify({"error": f"Missing key in the payload - {str(e)}"}), 400
+    except Exception as e:
+        # Catch all other errors
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/pl5', methods = ['POST'])
