@@ -4,11 +4,11 @@
 }
 
 .ant-collapse-header {
-    background: rgb(0, 112, 255);
+    background: #FFA07A; /* Light Salmon */
     background: linear-gradient(
         90deg,
-        rgba(0, 112, 255, 1) 0%,
-        rgba(65, 168, 189, 1) 100%
+        #FFA07A 0%, /* Light Salmon */
+        #FF7F50 100% /* Coral */
     );
     border-radius: 10px !important;
     margin-bottom: 5px;
@@ -17,8 +17,8 @@
 .ant-collapse-header:hover {
     background: linear-gradient(
         90deg,
-        rgb(0, 87, 201) 0%,
-        rgb(37, 151, 173) 100%
+        #E9967A 0%, /* Dark Salmon */
+        #FF6347 100% /* Tomato */
     );
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
@@ -33,18 +33,17 @@
 }
 
 .ant-collapse-content {
-    border-radius: 10px !important ;
+    border-radius: 10px !important;
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
 
 .tabs-container {
-    background-color: rgb(245, 245, 245);
+    background-color: #FFF5EE; /* Seashell */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: 10px 0;
-    /* padding: 20px 10px; */
     border-radius: 10px;
 }
 
@@ -66,7 +65,7 @@
 }
 
 .ant-table-thead tr th {
-    background-color: rgb(220, 220, 220) !important;
+    background-color: #F5DEB3 !important; /* Wheat */
 }
 
 .btns-container {
@@ -76,23 +75,22 @@
 }
 
 .ant-btn {
-    background-color: lightblue;
+    background-color: #FFDAB9; /* Peach Puff */
     background: linear-gradient(
         90deg,
-        rgba(0, 112, 255, 1) 0%,
-        rgba(65, 168, 189, 1) 100%
+        #FFA07A 0%, /* Light Salmon */
+        #FF7F50 100% /* Coral */
     );
     color: white;
     padding: 5px 50px;
     margin: 20px 10px 0;
-    /* width: 100%; */
 }
 
 .ant-btn:hover {
     background: linear-gradient(
         90deg,
-        rgb(0, 87, 201) 0%,
-        rgb(37, 151, 173) 100%
+        #E9967A 0%, /* Dark Salmon */
+        #FF6347 100% /* Tomato */
     );
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
     color: white !important;

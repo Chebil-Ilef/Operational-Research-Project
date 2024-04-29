@@ -16,7 +16,7 @@ const App = () => {
 
     return (
         <div className="content">
-            <h1>Linear Program Solver</h1>
+            <h1>Application de Recherche Opérationnelle </h1>
 
             <div className="container">
                 <PL1/>
