@@ -6,7 +6,8 @@ from controllers.PL3 import PL3
 from controllers.PL2 import PL2
 from controllers.PL4 import PL4
 from controllers.PL5 import PL5
-from controllers.PL6 import PL6
+# from controllers.PL6 import PL6
+from controllers.PL6 import NetworkOptimization
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -120,21 +121,44 @@ def pl5():
     return jsonify(response)
 
 
-@app.route('/pl6', methods = ['POST'])
-@cross_origin()
+# @app.route('/pl6', methods = ['POST'])
+# @cross_origin()
+# def pl6():
+#     data = request.get_json()
+#     nodes = data["nodes"]
+#     arcs = data["arcs"]
+#     durations = data["durations"]
+#     start_node = data["start_node"]
+#     end_node = data["end_node"]
+
+#     pl6 = PL6.solve_shortest_path(nodes=nodes, arcs=arcs, durations=durations, start_node=start_node, end_node=end_node)
+#     response = {
+#         "res6":pl6
+#     }
+#     return jsonify(response)
+
+@app.route('/pl6', methods=['POST'])
 def pl6():
     data = request.get_json()
-    nodes = data["nodes"]
-    arcs = data["arcs"]
-    durations = data["durations"]
-    start_node = data["start_node"]
-    end_node = data["end_node"]
 
-    pl6 = PL6.solve_shortest_path(nodes=nodes, arcs=arcs, durations=durations, start_node=start_node, end_node=end_node)
+    try:
+        links = [(link['source'], link['target']) for link in data['links']]
+        # Ensure that times are also mapped correctly.
+        times = {(link['source'], link['target']): link['time'] for link in data['links']}
+    except KeyError as e:
+        return jsonify({"error": f"Missing key in the payload - {str(e)}"}), 400
+
+    network_optimization = NetworkOptimization(links=links, times=times)
+    path = network_optimization.run()
+
+    if path is None:
+        return jsonify({"error": "No optimal path found"}), 404
+
     response = {
-        "res6":pl6
+        "shortest_path": path
     }
     return jsonify(response)
+
 
 
 
