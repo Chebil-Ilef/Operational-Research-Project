@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QHBoxLayout, QMessageBox,QGridLayout,QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIntValidator, QIcon
 from PyQt5.QtCore import Qt
 
@@ -31,7 +31,7 @@ class Exercise6(QMainWindow):
         title_label.setStyleSheet("color: #6AD4DD;")
         title_label.setAlignment(Qt.AlignCenter)
 
-        wording_label = QLabel("Network Flow Problem: \n Determine the optimal Path From a starting node to an end node  \n Start by first creating your network by adding different arcs.  \n Every arc has a starting node , an ending node and a duration \n", self)
+        wording_label = QLabel("This program helps you determine the optimal path from a starting node to an end node  \n First create your network by adding different arcs.  \n Every arc has a starting node , an ending node and a duration \n", self)
         wording_label.setFont(QFont("Arial", 15))
         wording_label.setStyleSheet("color: white;")
         wording_label.setAlignment(Qt.AlignCenter)
@@ -42,30 +42,34 @@ class Exercise6(QMainWindow):
         content_layout.addWidget(title_label)
         content_layout.addWidget(wording_label)
 
-        #list of arcs
+       #list of arcs
         self.arcs = []
         self.nodes = []
 
+        grid_layout = QGridLayout()  # Grid layout to align the label-input pairs
+
         labels = ["Start Node for the arc", "End Node for the arc", "Duration for the arc"]
 
-        for label in labels:
-            hbox = QHBoxLayout()
+        for row, label in enumerate(labels):
             lbl = QLabel(label)
-            line_edit = QLineEdit()
-            hbox.addWidget(lbl)
-            hbox.addWidget(line_edit)
-            content_layout.addLayout(hbox)
             lbl.setStyleSheet("color: white;")
             lbl.setFont(QFont("Arial", 15))
+            line_edit = QLineEdit()
+            
+            grid_layout.addWidget(lbl, row*2, 0, alignment=Qt.AlignHCenter | Qt.AlignTop)  # Center label horizontally above input field
+            grid_layout.addWidget(line_edit, row*2+1, 0, alignment=Qt.AlignTop)  # Add input field below label
+
             line_edit.setObjectName(label)
             line_edit.setStyleSheet("color: black;")
             line_edit.setFont(QFont("Arial", 15))
             line_edit.setMaximumWidth(200)
-            if label == "Start Node for the arc" or label == "End Node for the arc": 
-                #only let him input one letter 
+            if label == "Start Node for the arc" or label == "End Node for the arc":
+                #only let him input one letter
                 line_edit.setMaxLength(1)
             else:
                 line_edit.setValidator(QIntValidator())
+
+        content_layout.addLayout(grid_layout)  # Adding the grid layout to the main layout
 
         #create the start and end node to be choosen by the user 
         hbox1 = QHBoxLayout()
@@ -81,26 +85,29 @@ class Exercise6(QMainWindow):
         hbox1.addWidget(Start_Node)
         hbox1.addWidget(start_node_edit)
 
-        hbox2 = QHBoxLayout()
+        # Add a vertical spacer item
+        spacer_item = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        hbox1.addItem(spacer_item)
+
         End_Node = QLabel("End Node", self)
         End_Node.setFont(QFont("Arial", 15))
-        End_Node.setStyleSheet("color: white;")
+        End_Node.setStyleSheet("color: white; margin-top: 20px;")
         end_node_edit = QLineEdit()
         end_node_edit.setObjectName("End Node")
         end_node_edit.setStyleSheet("color: black;")
         end_node_edit.setFont(QFont("Arial", 15))
         end_node_edit.setMaximumWidth(200)
         end_node_edit.setMaxLength(1)
-        hbox2.addWidget(End_Node)
-        hbox2.addWidget(end_node_edit)
+        hbox1.addWidget(End_Node)
+        hbox1.addWidget(end_node_edit)
 
 
 
         exit_button = QPushButton("Exit", self)
         exit_button.setFont(QFont("Arial", 15))
         exit_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
-            "QPushButton:hover { background-color: #6AD4DD; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton:hover { background-color: #F7418F; }"
         )
         exit_button.setMaximumWidth(200)
         exit_button.clicked.connect(exit_program)
@@ -108,8 +115,8 @@ class Exercise6(QMainWindow):
         add_button = QPushButton("Add", self)
         add_button.setFont(QFont("Arial", 15))
         add_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
-            "QPushButton:hover { background-color: #6AD4DD; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton:hover { background-color: #F7418F; }"
         )
         add_button.setMaximumWidth(200)
         add_button.clicked.connect(self.add)
@@ -117,8 +124,8 @@ class Exercise6(QMainWindow):
         solve_button = QPushButton("Solve", self)
         solve_button.setFont(QFont("Arial", 15))
         solve_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
-            "QPushButton:hover { background-color: #6AD4DD; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton:hover { background-color: #F7418F; }"
         )
         solve_button.setMaximumWidth(200)
         solve_button.clicked.connect(self.solve)
@@ -127,7 +134,6 @@ class Exercise6(QMainWindow):
         add_layout.addWidget(add_button)
         content_layout.addLayout(add_layout)
         content_layout.addLayout(hbox1)
-        content_layout.addLayout(hbox2)
 
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(solve_button)

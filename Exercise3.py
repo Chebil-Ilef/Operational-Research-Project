@@ -60,7 +60,7 @@ class Exercise3(QMainWindow):
         # Solve button with dark blue theme
         solve_button = QPushButton("Solve")
         solve_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
         solve_button.setMaximumWidth(150)
@@ -69,7 +69,7 @@ class Exercise3(QMainWindow):
         exit_button = QPushButton("Exit", self)
         exit_button.setFont(QFont("Arial", 16))
         exit_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
         exit_button.setMaximumWidth(150)
