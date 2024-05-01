@@ -54,9 +54,8 @@ class MainWindow(QMainWindow):
     "PL 1: Optimise Agriculture Zone",
     "PL 2: Manage Production Of A Company",
     "PL 3: Planify The Needs Of Human Ressources",
-    "PLNE 1: Choice Of Bank Agencies Implementation",
-    "PLNE 2: Positioning Problem",
-    "PLNE 3: Network Flow Problem",
+    "PLNE 1: Positioning Problem",
+    "PLNE 2: Network Flow Problem",
     ]
         for exercise_name in exercise_names:
             exercise_button = QPushButton(exercise_name, self)
@@ -114,18 +113,14 @@ class MainWindow(QMainWindow):
             from Exercise3 import Exercise3
             self.exercise3 = Exercise3()
             self.exercise3.show()
-        elif case == "PLNE 1: Choice Of Bank Agencies Implementation":
+        elif case == "PLNE 1: Positioning Problem":
             from Exercise4 import Exercise4
-            self.Exercise4 = Exercise4()
-            self.Exercise4.show()
-        elif case == "PLNE 2: Positioning Problem":
+            self.exercise4 = Exercise4()
+            self.exercise4.show()
+        elif case == "PLNE 2: Network Flow Problem":
             from Exercise5 import Exercise5
             self.exercise5 = Exercise5()
             self.exercise5.show()
-        elif case == "PLNE 3: Network Flow Problem":
-            from Exercise6 import Exercise6
-            self.exercise6 = Exercise6()
-            self.exercise6.show()
         else:
             pass
  

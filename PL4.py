@@ -1,50 +1,60 @@
 import gurobipy as gp
 from gurobipy import GRB
-from itertools import combinations
-import numpy as np
 
-def solve_optimization(A, population, num_regions, B, K, D, a, b, c):
-    # Create the model
-    model = gp.Model("implantation_agences")
-    x = model.addVars(num_regions, vtype=GRB.BINARY, name="x")
-    y = model.addVars(num_regions, vtype=GRB.BINARY, name="y")
+def solve_coverage_problem(zone_data):
+    # Extracting data from zone_data
+    zones = [item[1] for item in zone_data]
+    sites = [item[0] for item in zone_data]
+    antennas_required = [item[2] for item in zone_data]
+
+    # Creating the Gurobi model
+    model = gp.Model("CoverageProblem")
+
+    # Creating a set of unique sites
+    unique_sites = set(site for sublist in sites for site in sublist)
+    print(unique_sites)
+
+    # Decision variables for each site
+    x = {}
+    for site in unique_sites:
+        x[site] = model.addVar(vtype=GRB.BINARY, name=f"x_{site}")
 
     # Objective function
-    Z = sum(a * population[i] + (
-                b * sum(A[i][j] * population[j] for j in range(num_regions) if i != j) + c * y[i] * population[
-            i]) * x[i]
-            for i in range(num_regions))
-    model.setObjective(Z, GRB.MAXIMIZE)
+    model.setObjective(gp.quicksum(x[site] for site in unique_sites), sense=GRB.MINIMIZE)
 
-    # Budget constraints
-    model.addConstr(K * x.sum() + D * y.sum() <= B, "contrainte_budget")
+    # Constraints for each zone
+    for i, zone in enumerate(zones):
+        print((i,zone))
+        # Constraint for each zone: the sum of binary variables for sites surrounding the zone must be greater than or equal to the number of required antennas
+        model.addConstr(gp.quicksum(x[site] for site in sites[i]) >= antennas_required[i], f"antenna_constraint_{i}")
 
-    # Constraints for not opening branches in neighboring regions
-    for i, j in combinations(range(num_regions), 2):
-        if A[i][j] == 1:
-            model.addConstr(A[i][j] * (x[i] + x[j]) <= 1, f"contrainte_voisines_{i}_{j}")
-
-    # Constraints to have clients from all regions
-    for i in range(num_regions):
-        model.addConstr(sum(A[i][j] * x[j] for j in range(num_regions)) + y[i] >= 1, f"contrainte_clients_{i}")
-
+    # Solving the model
     model.optimize()
 
-    # Get the solution
-    solution = []
-    for i in range(num_regions):
-        solution.append({
-            "Region": i + 1,
-            "Agence": int(x[i].getAttr('X')),
-            "Serveur_DAB": int(y[i].getAttr('X'))
-        })
+    # Displaying results
+    result = []
+    if model.status == GRB.OPTIMAL:
+        for site in unique_sites:
+            result.append({"Site": site, "Antenna": int(x[site].x)})
+        return result
+    else:
+        print("No optimal solution found.")
+        return None
 
-    return solution
 
+'''
 # Example usage:
-# A = ...  # adjacency matrix
-# population = ...  # population list
-# num_regions = ...  # number of regions
-# B, K, D, a, b, c = ..., ..., ..., ..., ..., ...  # other parameters
-# results = solve_optimization(A, population, num_regions, B, K, D, a, b, c)
-# print(results)
+zone_data = [
+    [['A', 'B'], 1,1],
+    [['A', 'E', 'F'], 2,1],
+    [['B', 'D'], 3,1],
+    [['C', 'E', 'G'], 4,2],
+    [['G', 'F'], 5,1]
+]
+
+result = solve_coverage_problem(zone_data)
+if result is not None:
+    print("Optimal Solution:")
+    for entry in result:
+        print(f"Site {entry['Site']}: Antenna = {entry['Antenna']}")
+'''

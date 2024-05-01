@@ -1,153 +1,94 @@
 import sys
-import PL1
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QTableWidget, QSpinBox, QPushButton, \
-    QVBoxLayout, QHBoxLayout, QMainWindow, QMessageBox
+from PyQt5.QtCore import Qt, QRegExp
+from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIntValidator, QIcon, QRegExpValidator
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, \
+    QMessageBox, QMainWindow
 
 
 def exit_program():
-    app.quit()
+    QApplication.quit()
+
 
 class Exercise4(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.initUI()
-        self.set_default_spin_box_values()
+        self.input_boxes = []
+        self.zone_data = []
+        self.init_ui()
 
-    def set_default_spin_box_values(self):
-        default_values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 0,
-                          1, 1, 0, 0, 1, 0, 0, 0, 0, 0,
-                          1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 
-                          0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-                          0, 1, 1, 1, 1, 0, 1, 0, 0, 0,
-                          1, 1, 0, 1, 1, 0, 1, 0, 0, 0,
-                          0, 0, 0, 0, 0, 1, 1, 0, 1, 0,
-                          0, 0, 0, 1, 1, 1, 1, 1, 0, 0,
-                          0, 0, 0, 0, 0, 0, 1, 1, 1, 0,
-                          0, 0, 0, 0, 0, 1, 0, 1, 1, 0,
-                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        
-        for i in range(10):
-            for j in range(10):
-                spin_box = self.tableau.cellWidget(i, j)
-                if spin_box is not None:
-                    # Get the index of the current cell in default_values list
-                    index = i * 10 + j
-                    default_value = default_values[index]
-                    # Set the default value in the spin box
-                    spin_box.setValue(default_value)
-
-    def initUI(self):
+    def init_ui(self):
         self.setAutoFillBackground(True)
         palette = self.palette()
         palette.setBrush(QPalette.Window, QBrush(QPixmap("background_image.jpg").scaled(1024,1000)))
         self.setWindowIcon(QIcon("icon.png"))
         self.setPalette(palette)
 
-        # Section 1: Titre
-        self.titre = QLabel("Choice Of Bank Agencies Implementation :", self)
-        self.titre.setFont(QFont("Roboto", 20, QFont.Bold))
+        # Section 0: Grand Titre
+        self.titre = QLabel("Positioning Problem :", self)
+        self.titre.setFont(QFont("Roboto", 30, QFont.Bold))
         self.titre.setStyleSheet("color: #6AD4DD;")
         self.titre.setAlignment(Qt.AlignCenter)
 
-        # Section 2: Introduction et tableau
-        self.introduction = QLabel("A bank with a budget of B dinars is looking to determine the optimal location of new branches and DAB servers to open in January 2006.\n The investment is K dinars per branch, and D dinars per DAB server.\n Nine regions are under consideration. In each region, there can be at most one branch.\n By opening an agency in region Ri, the bank will gain a number of customers equal to a% of the population of region Ri and b% of the population of neighboring regions.\n A DAB server in region Ri will gain a number of customers equal to c% of the population of region Ri.\n The matrix A = (aij) i = 1, ..., 9 and j = 1, ..., 9 gives for each region the neighboring regions (1 if neighboring regions, 0 otherwise)")
-        self.introduction.setFont(QFont("Roboto", 10))
+        # Section 1: Description de l'exercice
+        self.introduction = QLabel(
+            " A telecommunications company specializing in mobile phones is newly installed in a country \n whose map is presented below.Emission antennas can be placed on sites A, ..., G \n located on the common borders of the different zones of the country.\n An antenna placed on a given site can cover the two zones whose common border houses this site.\n The company's goal is to ensure at the lowest cost the coverage of each zone\n with at least one antenna while covering zone 4 with at least two antennas.",
+            self)
+        self.introduction.setFont(QFont("Roboto", 12))
         self.introduction.setStyleSheet("color: white;")
-        self.tableau = QTableWidget(11, 10)
-        self.tableau.setHorizontalHeaderLabels(["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"])
-        self.tableau.setVerticalHeaderLabels(["Nombre de Population", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"])
-        
 
-        for i in range(11):
-            for j in range(10):
-             if i==0:
-                spin_box = QSpinBox(self)
-                spin_box.setRange(0, 900)  # Set the range according to your needs
-                self.tableau.setCellWidget(i, j, spin_box)
-             else:
-                spin_box = QSpinBox(self)
-                spin_box.setRange(0, 1)  # Set the range according to your needs
-                self.tableau.setCellWidget(i, j, spin_box)
+        # Section 2: 3 lignes avec des Input Boxes
+        petit_titre = ["The zone number", "Number of antennas required",
+                       "The site that surrounds the zone"]
 
-        # Section 3: Champs de saisie
-        self.ligne1 = QLabel("Nombre de regions :")
-        self.ligne1.setFont(QFont("Roboto", 10))
-        self.ligne1.setStyleSheet("color: white;")
-        self.saisie1 = QSpinBox(self)
-        self.saisie1.setMaximumWidth(100)
-        self.saisie1.setRange(0,10)
-        self.saisie1.setAlignment(Qt.AlignCenter)
-        self.saisie1.setValue(9)
+        # Create a widget to contain the rows
+        self.widget = QWidget()
 
-        self.ligne2 = QLabel("Budget total:")
-        self.ligne2.setFont(QFont("Roboto", 10))
-        self.ligne2.setStyleSheet("color: white;")
-        self.saisie2 = QSpinBox(self)
-        self.saisie2.setMaximumWidth(100)
-        self.saisie2.setRange(0,99999999)
-        self.saisie2.setAlignment(Qt.AlignCenter)
-        self.saisie2.setValue(2000000)
+        # Layout for all rows
+        main_layout = QVBoxLayout(self.widget)
 
-        self.ligne3 = QLabel("Cout douverture agence :")
-        self.ligne3.setFont(QFont("Roboto", 10))
-        self.ligne3.setStyleSheet("color: white;")
-        self.saisie3 = QSpinBox(self)
-        self.saisie3.setRange(0, 9999999)
-        self.saisie3.setMaximumWidth(100)
-        self.saisie3.setAlignment(Qt.AlignCenter)
-        self.saisie3.setValue(500000)
+        for i in range(3):
+            # Layout for each row
+            row_layout = QHBoxLayout()
 
+            sentence_label = QLabel(f"{petit_titre[i]}: ")
+            sentence_label.setFont(QFont("Roboto", 14))
+            sentence_label.setStyleSheet("color: white;")
 
-        self.ligne4 = QLabel("Cout douverture DAB:")
-        self.ligne4.setFont(QFont("Roboto", 10))
-        self.ligne4.setStyleSheet("color: white;")
-        self.saisie4 = QSpinBox(self)
-        self.saisie4.setMaximumWidth(100)
-        self.saisie4.setRange(0, 99999999)
-        self.saisie4.setAlignment(Qt.AlignCenter)
-        self.saisie4.setValue(20000)
+            input_box = QLineEdit(self)
 
+            if i == 2:  # Configure input box for sites (The site that surrounds the zone)
+                input_box.setMaxLength(20)  # Adjust the maximum length as needed
+                input_box.setValidator(QRegExpValidator(QRegExp("^['A-G',]*$")))  # Allow only A-G and commas
+            else:
+                input_box.setMaxLength(3)
+                input_box.setValidator(QIntValidator(1, 999))
 
-        self.ligne5= QLabel("% regions agence")
-        self.ligne5.setFont(QFont("Roboto", 10))
-        self.ligne5.setStyleSheet("color: white;")
-        self.saisie5 = QSpinBox(self)
-        self.saisie5.setRange(0, 100)
-        self.saisie5.setMaximumWidth(100)
-        self.saisie5.setAlignment(Qt.AlignCenter)
-        self.saisie5.setValue(5)
+            input_box.setMaximumWidth(150)  # Adjust the width as needed
+            input_box.setAlignment(Qt.AlignCenter)
 
+            self.input_boxes.append(input_box)
 
-        self.ligne6 = QLabel("% regions voisins")
-        self.ligne6.setFont(QFont("Roboto", 10))
-        self.ligne6.setStyleSheet("color: white;")
-        self.saisie6 = QSpinBox(self)
-        self.saisie6.setMaximumWidth(100)
-        self.saisie6.setRange(0, 100)
-        self.saisie6.setAlignment(Qt.AlignCenter)
-        self.saisie6.setValue(1)
+            row_layout.addWidget(sentence_label, alignment=Qt.AlignCenter)
+            row_layout.addWidget(input_box, alignment=Qt.AlignCenter)
 
-        
-        self.ligne7 = QLabel("% DAB")
-        self.ligne7.setFont(QFont("Roboto", 10))
-        self.ligne7.setStyleSheet("color: white;")
-        self.saisie7 = QSpinBox(self)
-        self.saisie7.setMaximumWidth(100)
-        self.saisie7.setRange(0, 100)
-        self.saisie7.setAlignment(Qt.AlignCenter)
-        self.saisie7.setValue(2)
+            main_layout.addLayout(row_layout)
 
-
-        # Section 4: Bouton
-        self.bouton = QPushButton("Solve", self)
-        self.bouton.setStyleSheet(
+        # Section 3: 3 Boutons
+        self.solve_bouton = QPushButton("Solve", self)
+        self.solve_bouton.setStyleSheet(
             "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
-        self.bouton.setMaximumWidth(150)
-        self.bouton.clicked.connect(self.solve)
+        self.solve_bouton.setMaximumWidth(125)
+        self.solve_bouton.clicked.connect(self.on_solve_clicked)
+
+        self.add_zone_bouton = QPushButton("Add zone", self)
+        self.add_zone_bouton.setStyleSheet(
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
+            "QPushButton:hover { background-color: #6AD4DD; }"
+        )
+        self.add_zone_bouton.setMaximumWidth(150)
+        self.add_zone_bouton.clicked.connect(self.on_add_zone_clicked)
 
         self.exit_button = QPushButton("Exit", self)
         self.exit_button.setFont(QFont("Arial", 16))
@@ -156,100 +97,93 @@ class Exercise4(QMainWindow):
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
         self.exit_button.clicked.connect(exit_program)
-        self.exit_button.setMaximumWidth(150)
+        self.exit_button.setMaximumWidth(125)
 
-        # Mise en page
+        # Layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
         layout.addWidget(self.titre)
         layout.addWidget(self.introduction)
-        layout.addWidget(self.tableau)
-        layout.addWidget(self.ligne1, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie1, alignment=Qt.AlignCenter)
-        layout.addWidget(self.ligne2, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie2, alignment=Qt.AlignCenter)
-        layout.addWidget(self.ligne3, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie3, alignment=Qt.AlignCenter)
-        layout.addWidget(self.ligne4, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie4, alignment=Qt.AlignCenter)
-        layout.addWidget(self.ligne5, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie5, alignment=Qt.AlignCenter)
-        layout.addWidget(self.ligne6, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie6, alignment=Qt.AlignCenter)
-        layout.addWidget(self.ligne7, alignment=Qt.AlignCenter)
-        layout.addWidget(self.saisie7, alignment=Qt.AlignCenter)
-        layout.setSpacing(5)
-
+        layout.addWidget(self.widget)
         button_layout = QHBoxLayout()
-        button_layout.addWidget(self.bouton)
+        button_layout.addWidget(self.add_zone_bouton)
+        button_layout.addWidget(self.solve_bouton)
         button_layout.addWidget(self.exit_button)
 
         layout.addLayout(button_layout)
 
         self.setWindowIcon(QIcon("star.png"))
-        self.setWindowTitle("PL1")
-        self.resize(1000, 900)
+        self.setWindowTitle("PL5 - Exercise 5")
+        self.resize(400, 600)
 
     def set_background_image(self, image_path):
-        self.setAutoFillBackground(True)
-        palette = self.palette()
-        palette.setBrush(QPalette.Window, QBrush(QPixmap("Background_Image.jpg").scaled(self.size())))
-        self.setPalette(palette)
-
-    def get_tableau_values(self):
-        # Itère à travers le tableau et récupère les valeurs des cellules
-        tableau_values = {}
-        pop = {}
-        for i in range(11):
-            for j in range(10):
-                spin_box = self.tableau.cellWidget(i, j)
-                if i==0:
-                    key = (self.tableau.verticalHeaderItem(i).text(), self.tableau.horizontalHeaderItem(j).text())
-                    pop[key] = spin_box.value()
-
-                elif spin_box is not None:
-                    key = (self.tableau.verticalHeaderItem(i).text(), self.tableau.horizontalHeaderItem(j).text())
-                    tableau_values[key] = spin_box.value()
-        return tableau_values,pop
-
-    def get_saisie_values(self):
-        # Récupère les valeurs des saisies
-        saisie_values = [self.saisie1.value(), self.saisie2.value(), self.saisie3.value(),self.saisie4.value(),self.saisie5.value(),self.saisie6.value(),self.saisie7.value()]
-        return saisie_values
-
-    def solve(self):
         try:
-            # Extract data from input boxes and table
-            nb_reg = self.get_saisie_values()[0]
-            A, pop = self.get_tableau_values()
-            liste = self.get_saisie_values()
-
-            # Get the first 'nb_reg' elements from 'pop'
-            nb_premiers_pop = dict(list(pop.items())[:nb_reg])
-
-            # Get the first 'nb_reg' elements from each row of 'A'
-            nb_premiers_A = {key: A[key] for key in list(A.keys())[:nb_reg]}
-
-            print(nb_premiers_pop, "***", nb_premiers_A, "****", liste)
-
-            # Call PL4.solve_optimization with the correct parameters
-            import PL4
-            results = PL4.solve_optimization(nb_premiers_A, nb_premiers_pop, nb_reg, liste[1], liste[2], liste[3],
-                                             liste[4], liste[5], liste[6])
-
-            # Display the solution
-            message = f"The optimal solution is {results}"
-            QMessageBox.information(self, "Solution", message)
-
+            self.setAutoFillBackground(True)
+            palette = self.palette()
+            palette.setBrush(QPalette.Window, QBrush(QPixmap(image_path).scaled(self.size())))
+            self.setPalette(palette)
+            return True
         except Exception as e:
-            # Handle exceptions, display an error message if needed
-            print(f"Error in solve method: {e}")
-            QMessageBox.warning(self, "Error", "An error occurred during the optimization process.")
+            print(f"Error loading background image: {e}")
+            return False
 
+    def on_add_zone_clicked(self):
+        # Check if any input box is empty
+        if any(input_box.text().strip() == '' for input_box in self.input_boxes):
+            QMessageBox.warning(self, "Empty Input", "Please fill in all the input boxes.")
+            return
 
-if __name__ == "__main__":
+        # Retrieve data from input boxes and construct the desired data structure
+        zone_number = int(self.input_boxes[0].text())
+        antennas_required = int(self.input_boxes[1].text())
+        sites_surrounding = [site.strip("'") for site in self.input_boxes[2].text().split(',')]
+
+        # Check if the zone number already exists
+        if any(zone[1] == zone_number for zone in self.zone_data):
+            QMessageBox.warning(self, "Duplicate Zone Number",
+                                "Zone number already exists. Please choose a different zone number.")
+        else:
+            # Create a list representing the data structure
+            zone_data_item = [sites_surrounding, zone_number, antennas_required]
+
+            # Append the item to the main list
+            self.zone_data.append(zone_data_item)
+
+            # Clear input boxes
+            for input_box in self.input_boxes:
+                input_box.clear()
+
+            # Print the resulting data structure (for demonstration purposes)
+            print(self.zone_data)
+
+    def on_solve_clicked(self):
+        # Check if zone_data is empty
+        if not self.zone_data:
+            QMessageBox.warning(self, "Empty Zone", "Please add zones before solving.")
+            return
+
+        # Call the solve_coverage_problem method with zone_data
+        from PL4 import solve_coverage_problem
+        result = solve_coverage_problem(self.zone_data)
+        self.zone_data = []
+        if result is not None:
+            # Display the result in a message box
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Optimal Solution")
+            msg_box.setText("Optimal Solution:\n")
+            for entry in result:
+                msg_box.setText(msg_box.text() + f"Site {entry['Site']}: Antenna = {entry['Antenna']}\n")
+            msg_box.setIconPixmap(QPixmap("blue_icon.png"))  # Change to the path of your blue icon
+            msg_box.setFixedSize(500, 300)
+            msg_box.exec_()
+        else:
+                # Display a message box if there is no optimal solution
+            QMessageBox.warning(self, "No Optimal Solution", "No optimal solution found.")
+
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex1_window = Exercise4()
-    ex1_window.show()
+    ex5_window = Exercise4()
+    ex5_window.show()
     sys.exit(app.exec_())

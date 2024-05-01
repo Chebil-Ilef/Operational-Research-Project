@@ -1,189 +1,210 @@
 import sys
-from PyQt5.QtCore import Qt, QRegExp
-from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIntValidator, QIcon, QRegExpValidator
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, \
-    QMessageBox, QMainWindow
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QHBoxLayout, QMessageBox,QGridLayout,QSpacerItem, QSizePolicy
+from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIntValidator, QIcon
+from PyQt5.QtCore import Qt
 
 def exit_program():
-    QApplication.quit()
+    app.quit()
+
+class arc:
+    def __init__(self, start_node, end_node, duration):
+        self.start_node = start_node
+        self.end_node = end_node
+        self.duration = duration
 
 
 class Exercise5(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.input_boxes = []
-        self.zone_data = []
-        self.init_ui()
 
-    def init_ui(self):
+        self.setWindowTitle("Network Flow Problem")
+        self.setGeometry(100, 100, 800, 600)
+
         self.setAutoFillBackground(True)
         palette = self.palette()
         palette.setBrush(QPalette.Window, QBrush(QPixmap("background_image.jpg").scaled(1024,1000)))
         self.setWindowIcon(QIcon("icon.png"))
         self.setPalette(palette)
 
-        # Section 0: Grand Titre
-        self.titre = QLabel("Positioning Problem :", self)
-        self.titre.setFont(QFont("Roboto", 30, QFont.Bold))
-        self.titre.setStyleSheet("color: #6AD4DD;")
-        self.titre.setAlignment(Qt.AlignCenter)
+        title_label = QLabel("Network Flow Problem", self)
+        title_label.setFont(QFont("Arial", 30, QFont.Bold))
+        title_label.setStyleSheet("color: #6AD4DD;")
+        title_label.setAlignment(Qt.AlignCenter)
 
-        # Section 1: Description de l'exercice
-        self.introduction = QLabel(
-            " A telecommunications company specializing in mobile phones is newly installed in a country \n whose map is presented below.Emission antennas can be placed on sites A, ..., G \n located on the common borders of the different zones of the country.\n An antenna placed on a given site can cover the two zones whose common border houses this site.\n The company's goal is to ensure at the lowest cost the coverage of each zone\n with at least one antenna while covering zone 4 with at least two antennas.",
-            self)
-        self.introduction.setFont(QFont("Roboto", 12))
-        self.introduction.setStyleSheet("color: white;")
+        wording_label = QLabel("This program helps you determine the optimal path from a starting node to an end node  \n First create your network by adding different arcs.  \n Every arc has a starting node , an ending node and a duration \n", self)
+        wording_label.setFont(QFont("Arial", 15))
+        wording_label.setStyleSheet("color: white;")
+        wording_label.setAlignment(Qt.AlignCenter)
 
-        # Section 2: 3 lignes avec des Input Boxes
-        petit_titre = ["The zone number", "Number of antennas required",
-                       "The site that surrounds the zone"]
+        content_widget = QWidget()
+        content_layout = QVBoxLayout(content_widget)
 
-        # Create a widget to contain the rows
-        self.widget = QWidget()
+        content_layout.addWidget(title_label)
+        content_layout.addWidget(wording_label)
 
-        # Layout for all rows
-        main_layout = QVBoxLayout(self.widget)
+       #list of arcs
+        self.arcs = []
+        self.nodes = []
 
-        for i in range(3):
-            # Layout for each row
-            row_layout = QHBoxLayout()
+        grid_layout = QGridLayout()  # Grid layout to align the label-input pairs
 
-            sentence_label = QLabel(f"{petit_titre[i]}: ")
-            sentence_label.setFont(QFont("Roboto", 14))
-            sentence_label.setStyleSheet("color: white;")
+        labels = ["Start Node for the arc", "End Node for the arc", "Duration for the arc"]
 
-            input_box = QLineEdit(self)
+        for row, label in enumerate(labels):
+            lbl = QLabel(label)
+            lbl.setStyleSheet("color: white;")
+            lbl.setFont(QFont("Arial", 15))
+            line_edit = QLineEdit()
+            
+            grid_layout.addWidget(lbl, row*2, 0, alignment=Qt.AlignHCenter | Qt.AlignTop)  # Center label horizontally above input field
+            grid_layout.addWidget(line_edit, row*2+1, 0, alignment=Qt.AlignTop)  # Add input field below label
 
-            if i == 2:  # Configure input box for sites (The site that surrounds the zone)
-                input_box.setMaxLength(20)  # Adjust the maximum length as needed
-                input_box.setValidator(QRegExpValidator(QRegExp("^['A-G',]*$")))  # Allow only A-G and commas
+            line_edit.setObjectName(label)
+            line_edit.setStyleSheet("color: black;")
+            line_edit.setFont(QFont("Arial", 15))
+            line_edit.setMaximumWidth(200)
+            if label == "Start Node for the arc" or label == "End Node for the arc":
+                #only let him input one letter
+                line_edit.setMaxLength(1)
             else:
-                input_box.setMaxLength(3)
-                input_box.setValidator(QIntValidator(1, 999))
+                line_edit.setValidator(QIntValidator())
 
-            input_box.setMaximumWidth(150)  # Adjust the width as needed
-            input_box.setAlignment(Qt.AlignCenter)
+        content_layout.addLayout(grid_layout)  # Adding the grid layout to the main layout
 
-            self.input_boxes.append(input_box)
+        #create the start and end node to be choosen by the user 
+        hbox1 = QHBoxLayout()
+        Start_Node = QLabel("Start Node", self)
+        Start_Node.setFont(QFont("Arial", 15))
+        Start_Node.setStyleSheet("color: white;")
+        start_node_edit = QLineEdit()
+        start_node_edit.setObjectName("Start Node")
+        start_node_edit.setStyleSheet("color: black;")
+        start_node_edit.setFont(QFont("Arial", 15))
+        start_node_edit.setMaximumWidth(200)
+        start_node_edit.setMaxLength(1)
+        hbox1.addWidget(Start_Node)
+        hbox1.addWidget(start_node_edit)
 
-            row_layout.addWidget(sentence_label, alignment=Qt.AlignCenter)
-            row_layout.addWidget(input_box, alignment=Qt.AlignCenter)
+        # Add a vertical spacer item
+        spacer_item = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        hbox1.addItem(spacer_item)
 
-            main_layout.addLayout(row_layout)
+        End_Node = QLabel("End Node", self)
+        End_Node.setFont(QFont("Arial", 15))
+        End_Node.setStyleSheet("color: white; margin-top: 20px;")
+        end_node_edit = QLineEdit()
+        end_node_edit.setObjectName("End Node")
+        end_node_edit.setStyleSheet("color: black;")
+        end_node_edit.setFont(QFont("Arial", 15))
+        end_node_edit.setMaximumWidth(200)
+        end_node_edit.setMaxLength(1)
+        hbox1.addWidget(End_Node)
+        hbox1.addWidget(end_node_edit)
 
-        # Section 3: 3 Boutons
-        self.solve_bouton = QPushButton("Solve", self)
-        self.solve_bouton.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
-            "QPushButton:hover { background-color: #6AD4DD; }"
+
+
+        exit_button = QPushButton("Exit", self)
+        exit_button.setFont(QFont("Arial", 15))
+        exit_button.setStyleSheet(
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton:hover { background-color: #F7418F; }"
         )
-        self.solve_bouton.setMaximumWidth(125)
-        self.solve_bouton.clicked.connect(self.on_solve_clicked)
+        exit_button.setMaximumWidth(200)
+        exit_button.clicked.connect(exit_program)
 
-        self.add_zone_bouton = QPushButton("Add zone", self)
-        self.add_zone_bouton.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
-            "QPushButton:hover { background-color: #6AD4DD; }"
+        add_button = QPushButton("Add", self)
+        add_button.setFont(QFont("Arial", 15))
+        add_button.setStyleSheet(
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton:hover { background-color: #F7418F; }"
         )
-        self.add_zone_bouton.setMaximumWidth(150)
-        self.add_zone_bouton.clicked.connect(self.on_add_zone_clicked)
+        add_button.setMaximumWidth(200)
+        add_button.clicked.connect(self.add)
 
-        self.exit_button = QPushButton("Exit", self)
-        self.exit_button.setFont(QFont("Arial", 16))
-        self.exit_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
-            "QPushButton:hover { background-color: #6AD4DD; }"
+        solve_button = QPushButton("Solve", self)
+        solve_button.setFont(QFont("Arial", 15))
+        solve_button.setStyleSheet(
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton:hover { background-color: #F7418F; }"
         )
-        self.exit_button.clicked.connect(exit_program)
-        self.exit_button.setMaximumWidth(125)
+        solve_button.setMaximumWidth(200)
+        solve_button.clicked.connect(self.solve)
 
-        # Layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
-        layout.addWidget(self.titre)
-        layout.addWidget(self.introduction)
-        layout.addWidget(self.widget)
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.add_zone_bouton)
-        button_layout.addWidget(self.solve_bouton)
-        button_layout.addWidget(self.exit_button)
+        add_layout = QHBoxLayout()
+        add_layout.addWidget(add_button)
+        content_layout.addLayout(add_layout)
+        content_layout.addLayout(hbox1)
 
-        layout.addLayout(button_layout)
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addWidget(solve_button)
+        buttons_layout.addWidget(exit_button)
+        content_layout.addLayout(buttons_layout)
 
-        self.setWindowIcon(QIcon("star.png"))
-        self.setWindowTitle("PL5 - Exercise 5")
-        self.resize(400, 600)
+        self.setCentralWidget(content_widget)
 
-    def set_background_image(self, image_path):
-        try:
-            self.setAutoFillBackground(True)
-            palette = self.palette()
-            palette.setBrush(QPalette.Window, QBrush(QPixmap(image_path).scaled(self.size())))
-            self.setPalette(palette)
-            return True
-        except Exception as e:
-            print(f"Error loading background image: {e}")
-            return False
 
-    def on_add_zone_clicked(self):
-        # Check if any input box is empty
-        if any(input_box.text().strip() == '' for input_box in self.input_boxes):
-            QMessageBox.warning(self, "Empty Input", "Please fill in all the input boxes.")
-            return
+    def get_input_values(self):
+        input_values = {}
+        line_edits = self.findChildren(QLineEdit)
+        for line_edit in line_edits:
+            object_name = line_edit.objectName()
+            input_values[object_name] = line_edit.text()
+        return input_values
 
-        # Retrieve data from input boxes and construct the desired data structure
-        zone_number = int(self.input_boxes[0].text())
-        antennas_required = int(self.input_boxes[1].text())
-        sites_surrounding = [site.strip("'") for site in self.input_boxes[2].text().split(',')]
+    def add(self):
+        input_values = self.get_input_values()
+        start_node = input_values.get("Start Node for the arc", "")
+        end_node = input_values.get("End Node for the arc", "")
+        duration = input_values.get("Duration for the arc", "")
 
-        # Check if the zone number already exists
-        if any(zone[1] == zone_number for zone in self.zone_data):
-            QMessageBox.warning(self, "Duplicate Zone Number",
-                                "Zone number already exists. Please choose a different zone number.")
+        if not (start_node and end_node and duration):
+            QMessageBox.about(self, "Error", "Please fill all the fields")
         else:
-            # Create a list representing the data structure
-            zone_data_item = [sites_surrounding, zone_number, antennas_required]
+            #check if the start node and end node are already in the list of nodes
+            if start_node not in self.nodes:
+                self.nodes.append(start_node)
+            if end_node not in self.nodes:
+                self.nodes.append(end_node)
+            new_arc = arc(start_node, end_node, int(duration))
+            self.arcs.append(new_arc)
+            for line_edit in self.findChildren(QLineEdit):
+                line_edit.clear()
 
-            # Append the item to the main list
-            self.zone_data.append(zone_data_item)
-
-            # Clear input boxes
-            for input_box in self.input_boxes:
-                input_box.clear()
-
-            # Print the resulting data structure (for demonstration purposes)
-            print(self.zone_data)
-
-    def on_solve_clicked(self):
-        # Check if zone_data is empty
-        if not self.zone_data:
-            QMessageBox.warning(self, "Empty Zone", "Please add zones before solving.")
-            return
-
-        # Call the solve_coverage_problem method with zone_data
-        from PL5 import solve_coverage_problem
-        result = solve_coverage_problem(self.zone_data)
-        self.zone_data = []
-        if result is not None:
-            # Display the result in a message box
-            msg_box = QMessageBox(self)
-            msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Optimal Solution")
-            msg_box.setText("Optimal Solution:\n")
-            for entry in result:
-                msg_box.setText(msg_box.text() + f"Site {entry['Site']}: Antenna = {entry['Antenna']}\n")
-            msg_box.setIconPixmap(QPixmap("blue_icon.png"))  # Change to the path of your blue icon
-            msg_box.setFixedSize(500, 300)
-            msg_box.exec_()
+    def solve(self):
+        #read the start and end node
+        input_values = self.get_input_values()
+        start_node = input_values.get("Start Node", "")
+        end_node = input_values.get("End Node", "")
+        if not (start_node and end_node):
+            QMessageBox.about(self, "Error", "Please fill all the fields")
         else:
-                # Display a message box if there is no optimal solution
-            QMessageBox.warning(self, "No Optimal Solution", "No optimal solution found.")
+            #check if the start node and end node are already in the list of nodes
+            if start_node not in self.nodes:
+                QMessageBox.about(self, "Error", "Start Node is not in the list of nodes")
+            elif end_node not in self.nodes:
+                QMessageBox.about(self, "Error", "End Node is not in the list of nodes")
+            else:
+                #create the arcs and durations
+                arcs = []
+                durations = {}
+                for arc in self.arcs:
+                    arcs.append((arc.start_node, arc.end_node))
+                    durations[(arc.start_node, arc.end_node)] = arc.duration
+                #call the function to solve the problem
+                import PL5
+                result = PL5.solve_shortest_path(self.nodes, arcs, durations, start_node, end_node)
+                if result:
+                    QMessageBox.about(self, "Result", f"The shortest path from {start_node} to {end_node} is: {result}")
+                    total_duration = sum(durations[arc] for arc in result)
+                    QMessageBox.about(self, "Result", f"Total duration: {total_duration}")
+                else:
+                    QMessageBox.about(self, "Result", "No feasible solution found.")
 
-if __name__ == '__main__':
+
+
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ex5_window = Exercise5()
-    ex5_window.show()
+    main_window = Exercise5()
+    main_window.show()
     sys.exit(app.exec_())
