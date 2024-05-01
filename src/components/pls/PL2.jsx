@@ -301,7 +301,7 @@ const PL2 = () => {
 
         console.log(request);
 
-        const final_result = await PLservice(request, "pl4");
+        const final_result = await PLservice(request, "pl2");
         setResult(final_result.res4);
 
         console.log(final_result);

@@ -69,7 +69,7 @@ def pl2():
 
     pl2 = PL2(h=h, C=C, Cs=Cs,D=D, Ouv=Ouv, Sal=Sal, H=H, R=R, L=L, Hmax=Hmax, Hsup=Hsup, StockInit=StockInit)
     response = {
-        "res4":pl4.run()
+        "res4":pl2.run()
     }
     return jsonify(response)
 
