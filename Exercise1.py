@@ -3,7 +3,7 @@ import PL1
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QTableWidget, QSpinBox, QPushButton, \
-    QVBoxLayout, QHBoxLayout, QMainWindow, QMessageBox
+    QVBoxLayout, QHBoxLayout, QMainWindow, QMessageBox,QDoubleSpinBox
 
 
 def exit_program():
@@ -13,6 +13,20 @@ class Exercise1(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.set_default_spin_box_values()
+
+    def set_default_spin_box_values(self):
+        default_values = [75, 60, 55, 50, 60, 60, 50, 66, 110, 60, 2, 1, 2, 3, 2, 30, 24, 20, 28, 25, 3000, 2000, 2500, 3800, 3200, 500, 500, 600, 700, 550, 250, 180, 190, 310, 320]
+        
+        for i in range(7):
+            for j in range(5):
+                spin_box = self.tableau.cellWidget(i, j)
+                if spin_box is not None:
+                    # Get the index of the current cell in default_values list
+                    index = i * 5 + j
+                    default_value = default_values[index]
+                    # Set the default value in the spin box
+                    spin_box.setValue(default_value)
 
     def initUI(self):
         self.setAutoFillBackground(True)
@@ -26,7 +40,7 @@ class Exercise1(QMainWindow):
         self.titre.setFont(QFont("Roboto", 20, QFont.Bold))
         self.titre.setStyleSheet("color: #6AD4DD;")
         self.titre.setAlignment(Qt.AlignCenter)
-
+        
         # Section 2: Introduction et tableau
         self.introduction = QLabel(" The Tunisian state wants to develop an agricultural area of 1000 hectares where five crops are potentially possible \n wheat, barley, corn, sugar beet, and sunflower. We have the following data on these five crops")
         self.introduction.setFont(QFont("Roboto", 10))
@@ -47,31 +61,49 @@ class Exercise1(QMainWindow):
         self.ligne1.setStyleSheet("color: white;")
         self.saisie1 = QSpinBox(self)
         self.saisie1.setMaximumWidth(100)
+        self.saisie1.setMinimum(0)  # Set the minimum value
+        self.saisie1.setMaximum(10000)  # Set the maximum value
         self.saisie1.setAlignment(Qt.AlignCenter)
+        self.saisie1.setValue(3000)
+
         self.ligne2 = QLabel("Eau d’irrigation(m3):")
         self.ligne2.setFont(QFont("Roboto", 10))
         self.ligne2.setStyleSheet("color: white;")
         self.saisie2 = QSpinBox(self)
         self.saisie2.setMaximumWidth(100)
+        self.saisie2.setMinimum(0)  # Set the minimum value
+        self.saisie2.setMaximum(100000000)  # Set the maximum value
         self.saisie2.setAlignment(Qt.AlignCenter)
+        self.saisie2.setValue(25000000)    
+
         self.ligne3 = QLabel("Heures machine(heures machine) :")
         self.ligne3.setFont(QFont("Roboto", 10))
         self.ligne3.setStyleSheet("color: white;")
         self.saisie3 = QSpinBox(self)
         self.saisie3.setMaximumWidth(100)
+        self.saisie3.setMinimum(0)  # Set the minimum value
+        self.saisie3.setMaximum(100000)  # Set the maximum value
         self.saisie3.setAlignment(Qt.AlignCenter)
-        self.ligne4 = QLabel("Cout Main :")
+        self.saisie3.setValue(24000)    
+
+        self.ligne4 = QLabel("Cout Machine :")
         self.ligne4.setFont(QFont("Roboto", 10))
         self.ligne4.setStyleSheet("color: white;")
         self.saisie4 = QSpinBox(self)
         self.saisie4.setMaximumWidth(100)
         self.saisie4.setAlignment(Qt.AlignCenter)
+        self.saisie4.setValue(30)    
+
         self.ligne5= QLabel("cout Eau:")
         self.ligne5.setFont(QFont("Roboto", 10))
         self.ligne5.setStyleSheet("color: white;")
-        self.saisie5 = QSpinBox(self)
+        self.saisie5 = QDoubleSpinBox(self)
         self.saisie5.setMaximumWidth(100)
+        self.saisie5.setDecimals(2)  # Set the number of decimal places
+        self.saisie5.setMinimum(0.0)  # Set the minimum value
+        self.saisie5.setMaximum(100.0)  # Set the maximum value
         self.saisie5.setAlignment(Qt.AlignCenter)
+        self.saisie5.setValue(0.1)  # Set the default value  
 
         # Section 4: Bouton
         self.bouton = QPushButton("Solve", self)
@@ -134,7 +166,8 @@ class Exercise1(QMainWindow):
                 spin_box = self.tableau.cellWidget(i, j)
                 if spin_box is not None:
                     key = (self.tableau.verticalHeaderItem(i).text(), self.tableau.horizontalHeaderItem(j).text())
-                    tableau_values[key] = spin_box.value()
+                    value = spin_box.value()
+                    tableau_values[key] = value
         return tableau_values
 
     def get_saisie_values(self):
@@ -149,7 +182,7 @@ class Exercise1(QMainWindow):
         results = PL1.solve_optimization(t,s)
         print(results)
          #Display the solution
-        message = f"The minimum number of employees needed is {results}"
+        message = f"The agricultural best option is {results}"
         QMessageBox.information(self, "Solution", message)
 
 

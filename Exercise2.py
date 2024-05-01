@@ -12,7 +12,7 @@ class Exercise2(QMainWindow):
 
         self.setWindowTitle("Manage Production of a Company")
         self.setGeometry(100, 100, 800, 600)
-
+        
         # Apply background image to window using stylesheet
         self.setAutoFillBackground(True)
         palette = self.palette()
@@ -108,6 +108,23 @@ class Exercise2(QMainWindow):
         # Add buttons layout to the content widget
 
         content_layout.addLayout(buttons_layout)
+
+        default_values = {
+            "Months 1": "3000", "Months 2": "5000", "Months 3": "2000", "Months 4": "1000",
+            "Stock": "500", "Initial Employee Number": "100", "Salary of Employee": "1500",
+            "Employee Hours/M": "160", "Max Supp Hours": "20", "Price of Supp Hour": "13",
+            "Hours for pair": "4", "Price of one pair prod": "15", "Recruitment Fees": "1600",
+            "Licensing Fees": "2000", "Stocking Fees": "3"
+        }
+
+        line_edits = self.findChildren(QLineEdit)
+        for line_edit in line_edits:
+            objectName = line_edit.objectName()
+            # Set default value if exists
+            default_value = default_values.get(objectName)
+            if default_value:
+                line_edit.setText(default_value)
+                
     def get_input_values(self):
         input_values = {}
         line_edits = self.findChildren(QLineEdit)
