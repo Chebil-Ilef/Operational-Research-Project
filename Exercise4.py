@@ -109,7 +109,7 @@ class Exercise4(QMainWindow):
         self.exit_button = QPushButton("Exit", self)
         self.exit_button.setFont(QFont("Arial", 16))
         self.exit_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
         self.exit_button.clicked.connect(exit_program)

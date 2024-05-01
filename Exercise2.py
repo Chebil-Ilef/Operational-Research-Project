@@ -84,7 +84,7 @@ class Exercise2(QMainWindow):
         exit_button = QPushButton("Exit", self)
         exit_button.setFont(QFont("Arial", 16))
         exit_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
         exit_button.clicked.connect(exit_program)
@@ -93,7 +93,7 @@ class Exercise2(QMainWindow):
         solve_button = QPushButton("Solve", self)
         solve_button.setFont(QFont("Arial", 16))
         solve_button.setStyleSheet(
-            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 10px; font-size: 10pt; padding: 11px; }"
+            "QPushButton { background-color: #F7418F; color: white; border: none; border-radius: 20px; font-size: 14pt; padding: 15px; }"
             "QPushButton:hover { background-color: #6AD4DD; }"
         )
         # Connect solve_button to a solve function if needed
