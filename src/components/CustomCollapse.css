@@ -4,22 +4,14 @@
 }
 
 .ant-collapse-header {
-    background: #FFA07A; /* Light Salmon */
-    background: linear-gradient(
-        90deg,
-        #FFA07A 0%, /* Light Salmon */
-        #FF7F50 100% /* Coral */
-    );
+    background: rgb(46,131,186); /* Light Salmon */
+ 
     border-radius: 10px !important;
     margin-bottom: 5px;
 }
 
 .ant-collapse-header:hover {
-    background: linear-gradient(
-        90deg,
-        #E9967A 0%, /* Dark Salmon */
-        #FF6347 100% /* Tomato */
-    );
+    background: rgba(46,131,186,0.7);
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -38,7 +30,7 @@
 }
 
 .tabs-container {
-    background-color: #FFF5EE; /* Seashell */
+    background-color: rgba(46,131,186,0.4);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,7 +57,7 @@
 }
 
 .ant-table-thead tr th {
-    background-color: #F5DEB3 !important; /* Wheat */
+    background-color: rgba(46,131,186,0.7) !important;
 }
 
 .btns-container {
@@ -75,23 +67,15 @@
 }
 
 .ant-btn {
-    background-color: #FFDAB9; /* Peach Puff */
-    background: linear-gradient(
-        90deg,
-        #FFA07A 0%, /* Light Salmon */
-        #FF7F50 100% /* Coral */
-    );
+    background-color: rgba(46,131,186,0.7) !important;
+    background: rgba(46,131,186,0.5);
     color: white;
     padding: 5px 50px;
     margin: 20px 10px 0;
 }
 
 .ant-btn:hover {
-    background: linear-gradient(
-        90deg,
-        #E9967A 0%, /* Dark Salmon */
-        #FF6347 100% /* Tomato */
-    );
+    background: rgba(46,131,186,0.5);
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
     color: white !important;
 }
@@ -104,4 +88,29 @@
 .warning {
     text-align: center;
     color: red;
+}
+
+.wrapper {
+    max-height: 100%;
+    /* display: flex! important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important; */
+}
+
+.ant-modal {
+    display: flex!important;
+    flex-direction: column!important;
+    align-items: center!important;
+    justify-content: center;
+    top: 50px;
+}
+
+.ant-modal-content {
+    
+    /* max-height: 700px; */
+    height: 600px;
+    width: 1200px;
+    scroll-behavior: smooth;
+    overflow-y: auto;
 }

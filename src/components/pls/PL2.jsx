@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { Collapse, Table, Button, Form, Input } from "antd";
+import { Collapse, Table, Button, Form, Input, Modal } from "antd";
 import "../CustomCollapse.css";
 import { PLservice } from "../../service/plservice";
 
@@ -308,11 +308,30 @@ const PL2 = () => {
     };
 
     const [result, setResult] = useState(null);
-
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [activeKey, setActiveKey] = useState([]);
     return (
-        <Collapse className="collpase">
-            <Panel header={title}>
-                <p>{enonce}</p>
+        <div>
+           <Collapse className="collpase"
+            activeKey={activeKey}
+        >
+            <Panel header={title}
+                          onClick={() => {
+                            setActiveKey([]);
+                            setIsOpenModal(!isOpenModal)}}
+                            key="1"
+
+            >              
+            </Panel>
+        </Collapse>
+        <Modal
+        title={title}
+        open={isOpenModal}
+        footer={null}
+        onCancel={() => setIsOpenModal(!isOpenModal)}
+         style={{ width: "100%" }}
+        >
+               <p>{enonce}</p>
                 <br />
                 <h2 className="warning">
                     Veuillez donner des valeurs positives
@@ -396,8 +415,8 @@ const PL2 = () => {
                         </div>
                     </Form>
                 </div>
-            </Panel>
-        </Collapse>
+               </Modal>
+        </div>
     );
 };
 

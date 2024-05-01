@@ -1,8 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&family=Rubik&display=swap");
 
 :root {
-    --background-start: #FFA07A; /* Light Salmon */
-    --background-end: #FF7F50; /* Coral */
+    /* --background-start: #FFA07A; 
+    --background-end: #FF7F50;  */
+
+    
     --text-color: rgba(0, 0, 0, 0.87); /* Darker text for better contrast on light background */
 
     font-family: 'Poppins', 'Rubik', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -32,10 +34,10 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    background: var(--background-start);
-    background: linear-gradient(
+    background: url("./assets/background.jpg") no-repeat center center fixed;
+    /* background: linear-gradient(
         90deg,
         var(--background-start) 0%,
         var(--background-end) 100%
-    );
+    ); */
 }

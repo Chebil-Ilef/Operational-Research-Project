@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Collapse, Table, Button, Form, Input, Spin } from "antd";
+import { Collapse, Table, Button, Form, Input, Spin, Modal } from "antd";
 import "../CustomCollapse.css";
 import { PLservice } from "../../service/plservice";
 
@@ -387,10 +387,35 @@ const PL1 = () => {
 
     const [result, setResult] = useState(null);
     const [loading, setloading] = useState(false);
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [activeKey, setActiveKey] = useState([]);
+
+    // const handlePanelChange = (key) => {
+    //     setIsOpenModal(!isOpenModal);
+    // }
 
     return (
-        <Collapse className="collpase">
-            <Panel header={title}>
+        <div>
+ <Collapse className="collpase"
+            activeKey={activeKey}
+        >
+            <Panel header={title}
+                          onClick={() => {
+                            setActiveKey([]);
+                            setIsOpenModal(!isOpenModal)}}
+                            key="1"
+
+            >
+                
+            </Panel>
+        </Collapse>
+        <Modal
+                    title={title}
+                    open={isOpenModal}
+                    footer={null}
+                    onCancel={() => setIsOpenModal(!isOpenModal)}
+                     style={{ width: "100%" }}
+                    >
                 <p>{enonce}</p>
                 <br /><h2 className="warning">Veuillez donner des valeurs positives</h2>
                 <div className="tabs-container">
@@ -441,8 +466,9 @@ const PL1 = () => {
                         </div>
                     </Form>
                 </div>
-            </Panel>
-        </Collapse>
+                </Modal>
+        </div>
+       
     );
 };
 
