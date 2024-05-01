@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Collapse, Table, Button, Form, Input, InputNumber, Space } from "antd";
+import { Collapse, Table, Button, Form, Input, InputNumber, Space, Modal } from "antd";
 import "../CustomCollapse.css";
 import { PLservice } from "../../service/plservice";
 
@@ -105,70 +105,88 @@ const PL4 = () => {
       setResult(null);
     }
   };
+
+  const [isOpenModal, setIsOpenModal] = useState(false);
+    const [activeKey, setActiveKey] = useState([]);
   
 
   return (
-    <Collapse className="collapse">
-        <Panel header={title}>
-            <p>{enonce}</p>
-
-            <Form form={form} onFinish={onFinish} layout="vertical" autoComplete="off"
-        initialValues={initialValues}>
-            
-        {/* Form items for budget, cost per branch, etc. */}
-        {/* ... */}
-        <Table dataSource={populations} columns={populationColumns} pagination={false} />
-        <Table dataSource={adjacencyMatrix} columns={adjacencyColumns} pagination={false} />
-
-        <Form.Item
-            name="budget"
-            label="Budget (in dinars)"
-            rules={[{ required: true, message: 'Please input the budget!' }]}
-          >
-            <InputNumber min={0} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item
-            name="cost_per_branch"
-            label="Cost per Branch (in dinars)"
-            rules={[{ required: true, message: 'Please input the cost per branch!' }]}
-          >
-            <InputNumber min={0} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item
-            name="branch_attractiveness"
-            label="Branch Attractiveness (a)"
-            rules={[{ required: true, message: 'Please input the branch attractiveness!' }]}
-          >
-            <InputNumber min={0} max={100} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item
-            name="branch_attractiveness_neighbors"
-            label="Attractiveness to Neighbors (b)"
-            rules={[{ required: true, message: 'Please input the attractiveness to neighbors!' }]}
-          >
-            <InputNumber min={0} max={100} style={{ width: '100%' }} />
-          </Form.Item>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            Optimize Locations
-          </Button>
-          <Button onClick={() => form.resetFields()}>
-            Reset
-          </Button>
-        </Space>
-      </Form>
-
-      {result && (
-        <div>
-          <h2>Optimal Locations:</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
-        </div>
-      )}
+    <div>
+    <Collapse className="collapse"  activeKey={activeKey}>
+        <Panel header={title}
+                          onClick={() => {
+                            setActiveKey([]);
+                            setIsOpenModal(!isOpenModal)}}
+                            key="1">
+          
         </Panel>
     </Collapse>
+    <Modal
+    title={title}
+    open={isOpenModal}
+    footer={null}
+    onCancel={() => setIsOpenModal(!isOpenModal)}
+     style={{ width: "100%" }}
+    >
+    <p>{enonce}</p>
+
+<Form form={form} onFinish={onFinish} layout="vertical" autoComplete="off"
+initialValues={initialValues}>
+
+{/* Form items for budget, cost per branch, etc. */}
+{/* ... */}
+<Table dataSource={populations} columns={populationColumns} pagination={false} />
+<Table dataSource={adjacencyMatrix} columns={adjacencyColumns} pagination={false} />
+
+<Form.Item
+name="budget"
+label="Budget (in dinars)"
+rules={[{ required: true, message: 'Please input the budget!' }]}
+>
+<InputNumber min={0} style={{ width: '100%' }} />
+</Form.Item>
+
+<Form.Item
+name="cost_per_branch"
+label="Cost per Branch (in dinars)"
+rules={[{ required: true, message: 'Please input the cost per branch!' }]}
+>
+<InputNumber min={0} style={{ width: '100%' }} />
+</Form.Item>
+
+<Form.Item
+name="branch_attractiveness"
+label="Branch Attractiveness (a)"
+rules={[{ required: true, message: 'Please input the branch attractiveness!' }]}
+>
+<InputNumber min={0} max={100} style={{ width: '100%' }} />
+</Form.Item>
+
+<Form.Item
+name="branch_attractiveness_neighbors"
+label="Attractiveness to Neighbors (b)"
+rules={[{ required: true, message: 'Please input the attractiveness to neighbors!' }]}
+>
+<InputNumber min={0} max={100} style={{ width: '100%' }} />
+</Form.Item>
+<Space>
+<Button type="primary" htmlType="submit">
+Optimize Locations
+</Button>
+<Button onClick={() => form.resetFields()}>
+Reset
+</Button>
+</Space>
+</Form>
+
+{result && (
+<div>
+<h2>Optimal Locations:</h2>
+<pre>{JSON.stringify(result, null, 2)}</pre>
+</div>
+)}
+    </Modal>
+    </div>
   );
 };
 export default PL4;
