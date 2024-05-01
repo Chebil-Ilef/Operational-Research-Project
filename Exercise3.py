@@ -36,13 +36,23 @@ class Exercise3(QMainWindow):
         exercise_label.setStyleSheet("color: white;")
 
         # Sentences and input boxes
-        jours = ["Monday", "Tuesday", "Wednesday", "Thrusday", "Friday", "Saturday", "Sunday"]
-
+        default_values = {
+        "Monday": "17",
+        "Tuesday": "13",
+        "Wednesday": "15",
+        "Thursday": "19",
+        "Friday": "14",
+        "Saturday": "16",
+        "Sunday": "11"
+        }
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        for i in range(7):
-            sentence_label = QLabel(f"the number of emplyoees of {jours[i]}: ")
+        # Get days from keys
+        days = list(default_values.keys())
+
+        for day in days:
+            sentence_label = QLabel(f"The number of employees for {day}:")
             sentence_label.setFont(QFont("Roboto", 15))
             sentence_label.setStyleSheet("color: white;")
 
@@ -51,6 +61,11 @@ class Exercise3(QMainWindow):
             input_box.setMaximumWidth(50)
             input_box.setAlignment(Qt.AlignCenter)
             input_box.setValidator(QIntValidator(1, 999))
+
+            # Set default value if exists
+            default_value = default_values.get(day)
+            if default_value:
+                input_box.setText(default_value)
 
             self.input_boxes.append(input_box)
 
