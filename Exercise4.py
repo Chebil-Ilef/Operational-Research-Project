@@ -13,6 +13,30 @@ class Exercise4(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.set_default_spin_box_values()
+
+    def set_default_spin_box_values(self):
+        default_values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 0,
+                          1, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+                          1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 
+                          0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                          0, 1, 1, 1, 1, 0, 1, 0, 0, 0,
+                          1, 1, 0, 1, 1, 0, 1, 0, 0, 0,
+                          0, 0, 0, 0, 0, 1, 1, 0, 1, 0,
+                          0, 0, 0, 1, 1, 1, 1, 1, 0, 0,
+                          0, 0, 0, 0, 0, 0, 1, 1, 1, 0,
+                          0, 0, 0, 0, 0, 1, 0, 1, 1, 0,
+                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        for i in range(10):
+            for j in range(10):
+                spin_box = self.tableau.cellWidget(i, j)
+                if spin_box is not None:
+                    # Get the index of the current cell in default_values list
+                    index = i * 10 + j
+                    default_value = default_values[index]
+                    # Set the default value in the spin box
+                    spin_box.setValue(default_value)
 
     def initUI(self):
         self.setAutoFillBackground(True)
@@ -34,6 +58,7 @@ class Exercise4(QMainWindow):
         self.tableau = QTableWidget(11, 10)
         self.tableau.setHorizontalHeaderLabels(["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"])
         self.tableau.setVerticalHeaderLabels(["Nombre de Population", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"])
+        
 
         for i in range(11):
             for j in range(10):
@@ -54,6 +79,8 @@ class Exercise4(QMainWindow):
         self.saisie1.setMaximumWidth(100)
         self.saisie1.setRange(0,10)
         self.saisie1.setAlignment(Qt.AlignCenter)
+        self.saisie1.setValue(9)
+
         self.ligne2 = QLabel("Budget total:")
         self.ligne2.setFont(QFont("Roboto", 10))
         self.ligne2.setStyleSheet("color: white;")
@@ -61,6 +88,8 @@ class Exercise4(QMainWindow):
         self.saisie2.setMaximumWidth(100)
         self.saisie2.setRange(0,99999999)
         self.saisie2.setAlignment(Qt.AlignCenter)
+        self.saisie2.setValue(2000000)
+
         self.ligne3 = QLabel("Cout douverture agence :")
         self.ligne3.setFont(QFont("Roboto", 10))
         self.ligne3.setStyleSheet("color: white;")
@@ -68,6 +97,9 @@ class Exercise4(QMainWindow):
         self.saisie3.setRange(0, 9999999)
         self.saisie3.setMaximumWidth(100)
         self.saisie3.setAlignment(Qt.AlignCenter)
+        self.saisie3.setValue(500000)
+
+
         self.ligne4 = QLabel("Cout douverture DAB:")
         self.ligne4.setFont(QFont("Roboto", 10))
         self.ligne4.setStyleSheet("color: white;")
@@ -75,27 +107,38 @@ class Exercise4(QMainWindow):
         self.saisie4.setMaximumWidth(100)
         self.saisie4.setRange(0, 99999999)
         self.saisie4.setAlignment(Qt.AlignCenter)
-        self.ligne5= QLabel("%Pop regions agence")
+        self.saisie4.setValue(20000)
+
+
+        self.ligne5= QLabel("% regions agence")
         self.ligne5.setFont(QFont("Roboto", 10))
         self.ligne5.setStyleSheet("color: white;")
         self.saisie5 = QSpinBox(self)
         self.saisie5.setRange(0, 100)
         self.saisie5.setMaximumWidth(100)
         self.saisie5.setAlignment(Qt.AlignCenter)
-        self.ligne6 = QLabel("%Pop regions voisins")
+        self.saisie5.setValue(5)
+
+
+        self.ligne6 = QLabel("% regions voisins")
         self.ligne6.setFont(QFont("Roboto", 10))
         self.ligne6.setStyleSheet("color: white;")
         self.saisie6 = QSpinBox(self)
         self.saisie6.setMaximumWidth(100)
         self.saisie6.setRange(0, 100)
         self.saisie6.setAlignment(Qt.AlignCenter)
-        self.ligne7 = QLabel("%Pop DAB")
+        self.saisie6.setValue(1)
+
+        
+        self.ligne7 = QLabel("% DAB")
         self.ligne7.setFont(QFont("Roboto", 10))
         self.ligne7.setStyleSheet("color: white;")
         self.saisie7 = QSpinBox(self)
         self.saisie7.setMaximumWidth(100)
         self.saisie7.setRange(0, 100)
         self.saisie7.setAlignment(Qt.AlignCenter)
+        self.saisie7.setValue(2)
+
 
         # Section 4: Bouton
         self.bouton = QPushButton("Solve", self)
