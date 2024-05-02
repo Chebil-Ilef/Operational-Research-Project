@@ -79,10 +79,13 @@ class PL2:
         #* Optimisation
         model.optimize()
 
-        result = {}
 
-        #* Affichage des résultats
+        result = {"Solution optimale": {"Valeur optimale": model.objVal}}
+
+        # * Affichage des résultats
         print("Solution optimale:")
+        print("Valeur optimale =", model.objVal)
+
 
         for i in range(4):
             result["mois"+str(i+1)]={

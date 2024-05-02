@@ -376,10 +376,15 @@ const PL2 = () => {
                         </div>
 
                         <div className="solution">
+                        
+                        
+                            
                             {result != null ? (
                                 <div>
                                     <h2>Solution optimale</h2>
                                     <br />
+                                    <h3>Valeur optimale:</h3>
+                                    <p>{result["Solution optimale"]["Valeur optimale"]}</p>
                                     <h3>MOIS 1</h3>
                                     {Object.entries(result.mois1).map(
                                         (item, index) => (
@@ -412,6 +417,7 @@ const PL2 = () => {
                             ) : (
                                 <div></div>
                             )}
+                            
                         </div>
                     </Form>
                 </div>
