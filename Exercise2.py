@@ -27,7 +27,7 @@ class Exercise2(QMainWindow):
         title_label.setStyleSheet("color: #6AD4DD;")
         title_label.setAlignment(Qt.AlignCenter)
 
-        # Wording label
+        # Description 
         wording_label = QLabel("Manage Production Of A Company: \n Determine the optimal production schedule and the best policy for managing the workforce \n by Determining for how long you will be working,staff salary ,Supp hours   \n Working cost ,initial staff , working hours , hours per product ... \n you should only enter secussive months ", self)
         wording_label.setFont(QFont("Arial", 15))
         wording_label.setStyleSheet("color: white;")
@@ -37,7 +37,7 @@ class Exercise2(QMainWindow):
         content_widget = QWidget()
         content_layout = QVBoxLayout(content_widget)
 
-        # Add title and wording labels to content layout
+        # Add title and description labels to content layout
         content_layout.addWidget(title_label)
         content_layout.addWidget(wording_label)
 
@@ -147,7 +147,7 @@ class Exercise2(QMainWindow):
         # Call the method to solve optimization with collected inputs
         result , dict = PL2.solve_optimization( input_values, months_demand)
         # Prepare the message to be shown in the message box
-        message = f"Optimized Profit is : {result}\n"
+        message = f"Minimum total cost : {result}\n"
         message += "Decision Variables:\n"
         for key, value in dict.items():
             message += f"{key}: {value[0]}\n"

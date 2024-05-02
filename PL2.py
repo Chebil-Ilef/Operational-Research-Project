@@ -3,7 +3,7 @@ import gurobipy as gp
 def solve_optimization(input_values, months_demand):
     # Retrieve other required input values from input_values dictionary
     stock_initial = int(input_values["Stock"])
-    nombre_initiale_ouvriers = int(input_values["Initial Employee Number"])
+    nombre_initial_ouvriers = int(input_values["Initial Employee Number"])
     salaire_ouvrier = float(input_values["Salary of Employee"])
     heures_travail_ouvrier = int(input_values["Employee Hours/M"])
     max_heures_supplementaires = int(input_values["Max Supp Hours"])
@@ -29,17 +29,18 @@ def solve_optimization(input_values, months_demand):
 
     # Constraints
     for t in range(nb_mois):
+        #contrainte sur le nbr d ouvriers dispo et le stock 
         if t > 0:
             model.addConstr(ouvriers_dispo[t] == ouvriers_dispo[t - 1] + ouvriers_rec[t] - ouvriers_lic[t])
             model.addConstr(stock[t] == stock[t - 1] + paires_chaussures[t - 1] - months_demand[t - 1])
         else:
-            model.addConstr(ouvriers_dispo[t] == nombre_initiale_ouvriers + ouvriers_rec[t] - ouvriers_lic[t])
+            model.addConstr(ouvriers_dispo[t] == nombre_initial_ouvriers + ouvriers_rec[t] - ouvriers_lic[t])
             model.addConstr(stock[t] == stock_initial)
 
         model.addConstr(heures_sup[t] <= max_heures_supplementaires * ouvriers_dispo[t])
         model.addConstr(stock[t] + paires_chaussures[t] >= months_demand[t])
         model.addConstr(paires_chaussures[t] <= (1 / heures_travail_paire) * (heures_sup[t] + ouvriers_dispo[t] * heures_travail_ouvrier))
-
+    
     model.addConstrs((stock[t] >= 0 for t in range(nb_mois)))
     model.addConstrs((ouvriers_dispo[t] >= 0 for t in range(nb_mois)))
     model.addConstrs((ouvriers_rec[t] >= 0 for t in range(nb_mois)))
