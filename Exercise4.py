@@ -157,6 +157,7 @@ class Exercise4(QMainWindow):
             # Print the resulting data structure (for demonstration purposes)
             print(self.zone_data)
 
+
     def on_solve_clicked(self):
         # Check if zone_data is empty
         if not self.zone_data:
@@ -175,7 +176,6 @@ class Exercise4(QMainWindow):
             msg_box.setText("Optimal Solution:\n")
             for entry in result:
                 msg_box.setText(msg_box.text() + f"Site {entry['Site']}: Antenna = {entry['Antenna']}\n")
-            msg_box.setIconPixmap(QPixmap("blue_icon.png"))  # Change to the path of your blue icon
             msg_box.setFixedSize(500, 300)
             msg_box.exec_()
         else:

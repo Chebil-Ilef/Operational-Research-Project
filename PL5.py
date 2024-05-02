@@ -15,10 +15,13 @@ def solve_shortest_path(nodes, arcs, durations, start_node, end_node):
     # Constraints
     for node in nodes:
         if node == start_node:
+            # Constraint for the start node: exactly one outgoing arc is selected
             model.addConstr(sum(x[arc] for arc in arcs if arc[0] == node) - sum(x[arc] for arc in arcs if arc[1] == node) == 1)
         elif node == end_node:
+            # Constraint for the end node: exactly one incoming arc is selected
             model.addConstr(sum(x[arc] for arc in arcs if arc[0] == node) - sum(x[arc] for arc in arcs if arc[1] == node) == -1)
         else:
+            # Constraints for intermediate nodes: balance between incoming and outgoing arcs
             model.addConstr(sum(x[arc] for arc in arcs if arc[0] == node) - sum(x[arc] for arc in arcs if arc[1] == node) == 0)
 
     model.optimize()

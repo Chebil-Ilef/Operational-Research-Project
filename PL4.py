@@ -40,21 +40,3 @@ def solve_coverage_problem(zone_data):
     else:
         print("No optimal solution found.")
         return None
-
-
-'''
-# Example usage:
-zone_data = [
-    [['A', 'B'], 1,1],
-    [['A', 'E', 'F'], 2,1],
-    [['B', 'D'], 3,1],
-    [['C', 'E', 'G'], 4,2],
-    [['G', 'F'], 5,1]
-]
-
-result = solve_coverage_problem(zone_data)
-if result is not None:
-    print("Optimal Solution:")
-    for entry in result:
-        print(f"Site {entry['Site']}: Antenna = {entry['Antenna']}")
-'''
